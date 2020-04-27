@@ -12,10 +12,8 @@
 #include <omp.h>
 #include <sys/time.h>
 
-#define N_THREADS 2 
-
 void
-checkCommandLine(int argc, char** argv, int& size, int& trials, int& probs)
+checkCommandLine(int argc, char** argv, int& size, int& trials, int& probs, int& threads)
 {
    if (argc > 1) {
       size = atoi(argv[1]);
@@ -25,7 +23,10 @@ checkCommandLine(int argc, char** argv, int& size, int& trials, int& probs)
    }
    if (argc > 3) {
       probs = atoi(argv[3]);
-   }   
+   }
+   if (argc > 4) {
+      threads = atoi(argv[4]);
+   }      
 }
 
 long wtime()
@@ -38,14 +39,11 @@ long wtime()
 int 
 main(int argc, char* argv[]) 
 {
-   omp_set_num_threads(N_THREADS);
-   omp_set_schedule(omp_sched_dynamic, 0);
-
-
    // parâmetros dos experimentos
    int population_size = 30;
    int n_trials = 5000;
    int n_probs = 101;
+   int n_threads = 1;
 
    double* percent_infected; // percentuais de infectados (saída)
    double* prob_spread;      // probabilidades a serem testadas (entrada)
@@ -56,14 +54,17 @@ main(int argc, char* argv[])
 
    long ini_tempo, fim_tempo;
 
-   checkCommandLine(argc, argv, population_size, n_trials, n_probs);
+   checkCommandLine(argc, argv, population_size, n_trials, n_probs, n_threads);
+
+   omp_set_num_threads(n_threads);
+   omp_set_schedule(omp_sched_dynamic, 0);
     
    try {
       ini_tempo = wtime();
-      Population **population = new Population *[N_THREADS];
+      Population **population = new Population *[n_threads];
       Random rand;
 
-      for (int i = 0; i < N_THREADS; i++){
+      for (int i = 0; i < n_threads; i++){
          population[i] = new Population(population_size);
       }
 
@@ -72,7 +73,7 @@ main(int argc, char* argv[])
 
       prob_step = (prob_max - prob_min)/(double)(n_probs-1);
 
-      printf("Probabilidade, Percentual Infectado\n");
+      //printf("Probabilidade, Percentual Infectado\n");
 
       // para cada probabilidade, calcula o percentual de pessoas infectadas
       for (int ip = 0; ip < n_probs; ip++) {
@@ -94,14 +95,14 @@ main(int argc, char* argv[])
          percent_infected[ip] /= n_trials;
 
          // mostra resultado para esta probabilidade
-         printf("%lf, %lf\n", prob_spread[ip], percent_infected[ip]);
+         //printf("%lf, %lf\n", prob_spread[ip], percent_infected[ip]);
       }
 
       delete[] prob_spread;
       delete[] percent_infected;
       fim_tempo = wtime();
 
-      printf("Tempo de execução: %ld/usec\n", (long) (fim_tempo - ini_tempo));
+      printf("%ldusec\n", (long) (fim_tempo - ini_tempo));
    }
    catch (std::bad_alloc)
    {

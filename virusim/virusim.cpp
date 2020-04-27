@@ -63,7 +63,7 @@ main(int argc, char* argv[])
 
       prob_step = (prob_max - prob_min)/(double)(n_probs-1);
 
-      printf("Probabilidade, Percentual Infectado\n");
+      //printf("Probabilidade, Percentual Infectado\n");
 
       // para cada probabilidade, calcula o percentual de pessoas infectadas
       for (int ip = 0; ip < n_probs; ip++) {
@@ -83,14 +83,14 @@ main(int argc, char* argv[])
          percent_infected[ip] /= n_trials;
 
          // mostra resultado para esta probabilidade
-         printf("%lf, %lf\n", prob_spread[ip], percent_infected[ip]);
+         //printf("%lf, %lf\n", prob_spread[ip], percent_infected[ip]);
       }
 
       delete[] prob_spread;
       delete[] percent_infected;
       fim_tempo = wtime();
 
-      printf("Tempo de execução: %ld/usec\n", (long) (fim_tempo - ini_tempo));
+      printf("%ldusec\n", (long) (fim_tempo - ini_tempo));
    }
    catch (std::bad_alloc)
    {
