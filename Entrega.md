@@ -19,7 +19,8 @@
 	
 ## Slides
 
-[Slides]
+[Slides](https://github.com/elc139/t4-Rene-Thiago/blob/master/Slides.pdf)
 
 ## Bibliografia
 
+Stack Overflow. Zulan. https://stackoverflow.com/questions/42970700/openmp-dynamic-vs-guided-scheduling.
