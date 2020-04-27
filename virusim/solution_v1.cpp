@@ -10,6 +10,7 @@
 #include "Random.h"
 #include "Population.h"
 #include <omp.h>
+#include <sys/time.h>
 
 #define N_THREADS 2
 
@@ -25,6 +26,13 @@ checkCommandLine(int argc, char** argv, int& size, int& trials, int& probs)
    if (argc > 3) {
       probs = atoi(argv[3]);
    }   
+}
+
+long wtime()
+{
+    struct timeval t;
+    gettimeofday(&t, NULL);
+    return t.tv_sec*1000000 + t.tv_usec;
 }
 
 int 
@@ -45,10 +53,12 @@ main(int argc, char* argv[])
    double prob_step;
    int base_seed = 100;
 
+   long ini_tempo, fim_tempo;
+
    checkCommandLine(argc, argv, population_size, n_trials, n_probs);
     
    try {
-
+      ini_tempo = wtime();
       Population **population = new Population *[N_THREADS];
       Random rand;
 
@@ -88,6 +98,10 @@ main(int argc, char* argv[])
 
       delete[] prob_spread;
       delete[] percent_infected;
+
+      fim_tempo = wtime();
+
+      printf("Tempo de execução: %ld/usec\n", (long) (fim_tempo - ini_tempo));
    }
    catch (std::bad_alloc)
    {
